@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChatGPT Axon Body Overlay</title>
+  <style>
+    :root{
+      --pad: 20px;/* GOTO LINE 37 TO EDIT FONT. GOTO LINE 60 TO EDIT SERIAL NUMBER */
+/* ПЕРЕЙДИТЕ К ЛИНИИ 37 ДЛЯ ИЗМЕНЕНИЯ ШРИФТА. ПЕРЕЙДИТЕ К ЛИНИИ 60 ДЛЯ ИЗМЕНЕНИЯ СЕРИЙНОГО НОМЕРА*/
+      --gap: 6px;
+      --font-size: 22px;
+      --font-weight: 700;
+      --text-color: #ffffff;
+      --stroke-w: 2px;
+      --stroke-color: #000000;
+      --logo-max: 60px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height:100%; margin:0; background: transparent; }
+
+    .overlay {
+      position: fixed; inset: 0; pointer-events: none;
+      display: flex; justify-content: flex-end; align-items: flex-start;
+    }
+
+    .right-block {
+      display: flex; flex-direction: row; align-items: flex-start; gap: 10px;
+      margin-top: 0; margin-right: 0;
+    }
+
+    .text-block {
+      margin-top: 10px; /* отступ текста сверху */
+      display: grid; gap: var(--gap);
+      color: var(--text-color);
+      font: var(--font-weight) var(--font-size)/1.15 ui-monospace, Arial, Arial, Arial, Arial, Arial, Arial, monospace;
+      letter-spacing: 0px; white-space: pre;
+      -webkit-text-stroke: var(--stroke-w) var(--stroke-color);
+      text-stroke: var(--stroke-w) var(--stroke-color);
+      paint-order: stroke fill; text-rendering: optimizeLegibility;
+      text-align: right;
+    }
+
+    .line { opacity: 0.98; }
+    .device { opacity: 0.92; }
+
+    .logo-wrap { width: var(--logo-max); height: var(--logo-max); display: grid; place-items: center; }
+    .logo-wrap img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+    @media (max-width: 1280px) { :root{ --font-size: 18px; } }
+    @media (max-width: 900px)  { :root{ --font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="right-block">
+      <div class="text-block">
+        <div class="line" id="dt"></div>
+        <div class="line device" id="device">AXON BODY 3 X12345678</div>
+      </div>
+      <div class="logo-wrap">
+        <img src="logo.png" alt="logo" onerror="this.style.opacity=0.2" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const qs = new URLSearchParams(location.search);
+    const setCSS = (name, val, unit='') => { if (val !== null) document.documentElement.style.setProperty(name, val + unit); };
+    if(qs.get('device')) document.getElementById('device').textContent = qs.get('device');
+    if(qs.get('strokew')) setCSS('--stroke-w', qs.get('strokew'),'px');
+    if(qs.get('strokecolor')) setCSS('--stroke-color', qs.get('strokecolor'));
+
+    function pad2(n){ return String(n).padStart(2, '0'); }
+    function tzOffsetHHMM(date){
+      const offMin = -date.getTimezoneOffset();
+      const sign = offMin >= 0 ? '+' : '-';
+      const abs = Math.abs(offMin);
+      const hh = pad2(Math.floor(abs/60));
+      const mm = pad2(abs % 60);
+      return `${sign}${hh}${mm}`;
+    }
+
+    function formatDateTime(d){
+      const yyyy = d.getFullYear();
+      const MM = pad2(d.getMonth()+1);
+      const DD = pad2(d.getDate());
+      const hh = pad2(d.getHours());
+      const mm = pad2(d.getMinutes());
+      const ss = pad2(d.getSeconds());
+      const tz = tzOffsetHHMM(d);
+      return `${yyyy}-${MM}-${DD} ${hh}:${mm}:${ss} ${tz}`;
+    }
+
+    function tick(){
+      const now = new Date();
+      document.getElementById('dt').textContent = formatDateTime(now);
+    }
+
+    tick();
+    setInterval(tick, 1000);
+  </script>
+</body>
+</html>
